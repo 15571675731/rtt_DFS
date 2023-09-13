@@ -8,7 +8,7 @@
 #define _DEBUG_
 
 #define SPI_TIMEOUT     0XFF
-#define DUMMY           0X5A
+#define DUMMY           0X00
 
 static struct stm32_spi spi_bus_obj; //SPI总线对象
 
@@ -26,30 +26,40 @@ struct stm32_spi_config SPI_DEF_CONFIG = {
 rt_err_t Stm32_Spi_Send_Recv(SPI_TypeDef *SPIx, uint32_t timeout, const uint8_t *send_data, uint8_t *recv_data)
 {
     uint32_t ret = timeout;
+	uint16_t recv = 0;
     
     
-    while(SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_TXE) == RESET && timeout)
+    while(SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_TXE) == RESET && timeout) // 90 00 00 00 00 00
         timeout--;
-    if(!send_data && timeout)
+    if(send_data && timeout)
         SPI_I2S_SendData(SPIx, *send_data);
     else if(timeout)
         SPI_I2S_SendData(SPIx, DUMMY);
     
     if(!timeout)
+	{
+		rt_kprintf("spi send timeout\r\n");
         return RT_ERROR;
+	}
     
     timeout = ret;
     while(SPI_I2S_GetFlagStatus(SPIx, SPI_I2S_FLAG_RXNE) == RESET && timeout)
         timeout--;
-    if(!recv_data && timeout)
-        *recv_data = SPI_I2S_ReceiveData(SPIx);
+    if(recv_data && timeout)
+	{
+		recv = SPI_I2S_ReceiveData(SPIx);
+		*recv_data = recv;
+	}
     else if(timeout)
-        SPI_I2S_ReceiveData(SPIx);
+        recv = SPI_I2S_ReceiveData(SPIx);
     
     if(!timeout)
+	{
+		rt_kprintf("spi recv timeout\r\n");
         return RT_ERROR;
+	}
     
-    return RT_EOK;
+    return RT_EOK; //90 00 00 00  00(ef) 00(17)
 }
 
 
@@ -78,11 +88,11 @@ void stm32_spi1_gpio_cfg(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
     
-    GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI1);
+    GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
+	
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI1);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_SPI1);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI1);
-    
-    GPIO_Init(GPIOB, &GPIO_InitStructure);//初始化
     
     
 }
@@ -105,30 +115,26 @@ rt_err_t stm32_spi_init(struct stm32_spi *spi_drv, struct rt_spi_configuration *
     
     stm32_spi1_gpio_cfg();
     
-    SPIx = spi_drv->config->Instance;
-    
-    if(configuration->mode & RT_SPI_CPHA) // RT_SPI_CPHA = 1
-    {
+    SPIx = spi_drv->stm32_spi_config->Instance;
+//    
+//    if(configuration->mode & RT_SPI_CPHA) // RT_SPI_CPHA = 1
         SPI_InitStruct.SPI_CPHA = SPI_CPHA_2Edge;
-    }
-    else // RT_SPI_CPHA = 0
-    {
-        SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
-    }
-    
-    if(configuration->mode & RT_SPI_CPOL) // RT_SPI_CPOL = 1
+//    else // RT_SPI_CPHA = 0
+//        SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
+//    
+//    if(configuration->mode & RT_SPI_CPOL) // RT_SPI_CPOL = 1
         SPI_InitStruct.SPI_CPOL = SPI_CPOL_High;
-    else // RT_SPI_CPOL = 0
-        SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
-    
-    if(configuration->mode & RT_SPI_MSB)
+//    else // RT_SPI_CPOL = 0
+//        SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
+//    
+//    if(configuration->mode & RT_SPI_MSB)
         SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
-    else
-        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_LSB;
+//    else
+//        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_LSB;
     
-    if(configuration->mode & RT_SPI_SLAVE)
-        SPI_InitStruct.SPI_Mode = SPI_Mode_Slave;
-    else
+//    if(configuration->mode & RT_SPI_SLAVE)
+//        SPI_InitStruct.SPI_Mode = SPI_Mode_Slave;
+//    else
         SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
     
     SPI_InitStruct.SPI_CRCPolynomial = 0x03;
@@ -177,7 +183,13 @@ rt_err_t stm32_configure(struct rt_spi_device *device, struct rt_spi_configurati
     return stm32_spi_init(spi_drv, configuration);
 }
 
-
+extern u8 My_SpiSendAndRecvData(u8 data);
+//extern u16 My_DEV_ID(void);
+//rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *message)
+//{
+//	return My_DEV_ID();
+//}
+#if 1
 /*
 * 操作方法xfer的作用是将待发送的数据发送给从设备的接口
 */
@@ -188,6 +200,7 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     struct stm32_spi *spi_drv = NULL;
     struct stm32_spi_io *ns_io;
     rt_size_t already_send_len = 0;
+	uint8_t _send = NULL;
     
     const uint8_t *send_buf = NULL;
     uint8_t *recv_buf = NULL;
@@ -202,27 +215,31 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     
     //拉低片选
     spi_drv =  rt_container_of(device->bus, struct stm32_spi, spi_bus);
-    SPIx = spi_drv->config->Instance;
+    SPIx = spi_drv->stm32_spi_config->Instance;
     
     ns_io = device->parent.user_data;
     GPIO_ResetBits(ns_io->GPIOx, ns_io->GPIO_Pin);
     
     //循环读/写数据,读写的数据量由 message->length 来决定 根据RTT的官方例程来看， message->length 这个值应该不用更新，传输完成返回即可
     
-    while( already_send_len <= message->length)
+    while( already_send_len < message->length)
     {
         //如果是全双工
         if(send_buf && recv_buf) //收发均进行
         {
             ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, send_buf+already_send_len, recv_buf+already_send_len);//一次只能传输一个字节(没有DMA的情况下)
+			
         }
-        else if(send_buf) //只收
-        {
-            ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, NULL, recv_buf+already_send_len);//一次只能传输一个字节(没有DMA的情况下)
-        }
-        else //只发
+        else if(send_buf) //只发
         {
             ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, send_buf+already_send_len, NULL);//一次只能传输一个字节(没有DMA的情况下)
+//			_send = *(send_buf+already_send_len);
+//			SPI_I2S_SendData(SPIx, _send);
+        }
+        else //只收
+        {
+            ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, NULL, recv_buf+already_send_len);//一次只能传输一个字节(没有DMA的情况下)
+//			*(recv_buf+already_send_len) = SPI_I2S_ReceiveData(SPIx);
         }
         
         already_send_len++;
@@ -248,6 +265,8 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     return already_send_len;
 }
 
+#endif
+
 static struct rt_spi_ops stm32_spi_ops= {
     .configure = stm32_configure,
     .xfer = stm32_xfer
@@ -260,9 +279,8 @@ static struct rt_spi_ops stm32_spi_ops= {
 static int rt_hw_spi_bus_init(void)
 {
     rt_err_t ret = RT_EOK;
-    struct stm32_spi_config def_config = SPI_DEF_CONFIG;
     
-    spi_bus_obj.config = &def_config;
+    spi_bus_obj.stm32_spi_config = &SPI_DEF_CONFIG;
     
     spi_bus_obj.cfg->data_width = 8;
     spi_bus_obj.cfg->max_hz = 2;
@@ -271,11 +289,12 @@ static int rt_hw_spi_bus_init(void)
     
     spi_bus_obj.spi_dma_flag = UNUSE_SPI_DMA;
     
-    spi_bus_obj.spi_bus.parent.user_data = &def_config;
+    spi_bus_obj.spi_bus.parent.user_data = &SPI_DEF_CONFIG;
+//	spi_bus_obj.spi_bus.parent.user_data = NULL;
     
 
     ret = rt_spi_bus_register(&spi_bus_obj.spi_bus,
-                             spi_bus_obj.config->bus_name,
+                             spi_bus_obj.stm32_spi_config->bus_name,
                              &stm32_spi_ops);
     RT_ASSERT(ret == RT_EOK);
     

@@ -24,7 +24,7 @@ struct stm32_spi_config
 struct stm32_spi
 {
     SPI_InitTypeDef SPI_InitStruct;
-    struct stm32_spi_config *config;
+    struct stm32_spi_config *stm32_spi_config;
     struct rt_spi_configuration *cfg;
 
 //    struct
