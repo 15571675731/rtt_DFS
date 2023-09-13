@@ -233,7 +233,7 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
         #ifdef _DEBUG_
             rt_kprintf("spi stm32_xfer error\r\n");
         #endif
-            return 0;;
+            return 0;
         }
     }
     
