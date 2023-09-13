@@ -116,25 +116,25 @@ rt_err_t stm32_spi_init(struct stm32_spi *spi_drv, struct rt_spi_configuration *
     stm32_spi1_gpio_cfg();
     
     SPIx = spi_drv->stm32_spi_config->Instance;
-//    
-//    if(configuration->mode & RT_SPI_CPHA) // RT_SPI_CPHA = 1
-        SPI_InitStruct.SPI_CPHA = SPI_CPHA_2Edge;
-//    else // RT_SPI_CPHA = 0
-//        SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
-//    
-//    if(configuration->mode & RT_SPI_CPOL) // RT_SPI_CPOL = 1
-        SPI_InitStruct.SPI_CPOL = SPI_CPOL_High;
-//    else // RT_SPI_CPOL = 0
-//        SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
-//    
-//    if(configuration->mode & RT_SPI_MSB)
-        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
-//    else
-//        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_LSB;
     
-//    if(configuration->mode & RT_SPI_SLAVE)
-//        SPI_InitStruct.SPI_Mode = SPI_Mode_Slave;
-//    else
+    if(configuration->mode & RT_SPI_CPHA) // RT_SPI_CPHA = 1
+        SPI_InitStruct.SPI_CPHA = SPI_CPHA_2Edge;
+    else // RT_SPI_CPHA = 0
+        SPI_InitStruct.SPI_CPHA = SPI_CPHA_1Edge;
+    
+    if(configuration->mode & RT_SPI_CPOL) // RT_SPI_CPOL = 1
+        SPI_InitStruct.SPI_CPOL = SPI_CPOL_High;
+    else // RT_SPI_CPOL = 0
+        SPI_InitStruct.SPI_CPOL = SPI_CPOL_Low;
+    
+    if(configuration->mode & RT_SPI_MSB)
+        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
+    else
+        SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_LSB;
+    
+    if(configuration->mode & RT_SPI_SLAVE)
+        SPI_InitStruct.SPI_Mode = SPI_Mode_Slave;
+    else
         SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
     
     SPI_InitStruct.SPI_CRCPolynomial = 0x03;
@@ -143,15 +143,6 @@ rt_err_t stm32_spi_init(struct stm32_spi *spi_drv, struct rt_spi_configuration *
     SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;
     SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
     
-//    SPI_InitStruct.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128; /* 分频系数设置为128 */
-//    SPI_InitStruct.SPI_CPHA = SPI_CPHA_2Edge;
-//    SPI_InitStruct.SPI_CPOL = SPI_CPOL_High;
-//    SPI_InitStruct.SPI_CRCPolynomial = 0x03; /* crc检验，大于1即可 */
-//    SPI_InitStruct.SPI_DataSize = SPI_DataSize_8b;
-//    SPI_InitStruct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-//    SPI_InitStruct.SPI_FirstBit = SPI_FirstBit_MSB;
-//    SPI_InitStruct.SPI_Mode = SPI_Mode_Master;
-//    SPI_InitStruct.SPI_NSS = SPI_NSS_Soft;
     spi_drv->SPI_InitStruct = SPI_InitStruct;
     SPI_Init(SPIx, &SPI_InitStruct);
     
@@ -183,13 +174,7 @@ rt_err_t stm32_configure(struct rt_spi_device *device, struct rt_spi_configurati
     return stm32_spi_init(spi_drv, configuration);
 }
 
-extern u8 My_SpiSendAndRecvData(u8 data);
-//extern u16 My_DEV_ID(void);
-//rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *message)
-//{
-//	return My_DEV_ID();
-//}
-#if 1
+
 /*
 * 操作方法xfer的作用是将待发送的数据发送给从设备的接口
 */
@@ -234,13 +219,10 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
         else if(send_buf) //只发
         {
             ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, send_buf+already_send_len, NULL);//一次只能传输一个字节(没有DMA的情况下)
-//			_send = *(send_buf+already_send_len);
-//			SPI_I2S_SendData(SPIx, _send);
         }
         else //只收
         {
             ret = Stm32_Spi_Send_Recv(SPIx, SPI_TIMEOUT, NULL, recv_buf+already_send_len);//一次只能传输一个字节(没有DMA的情况下)
-//			*(recv_buf+already_send_len) = SPI_I2S_ReceiveData(SPIx);
         }
         
         already_send_len++;
@@ -267,7 +249,6 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     return already_send_len;
 }
 
-#endif
 
 static struct rt_spi_ops stm32_spi_ops= {
     .configure = stm32_configure,
@@ -291,6 +272,11 @@ static int rt_hw_spi_bus_init(void)
     
     spi_bus_obj.spi_dma_flag = UNUSE_SPI_DMA;
     
+    /*
+        spi_bus.parent.user_data就是不能为NULL，其他的都行
+        在实际使用的过程中，注册一个SPI从设备需要传递他的片选IO信息作为user_data
+        这里传递的user_data实际不起作用，防止报错传的（调用rt_spi_bus_attach_device注册从设备）
+    */
     spi_bus_obj.spi_bus.parent.user_data = &SPI_DEF_CONFIG;
 //	spi_bus_obj.spi_bus.parent.user_data = NULL;
     

@@ -397,6 +397,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\src\system_stm32f4xx.c</FilePath>
             </File>
+            <File>
+              <FileName>spi_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\src\spi_test.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
