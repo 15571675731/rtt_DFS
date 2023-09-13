@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc;..\SFUD\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -881,6 +881,26 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\readme.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SFUD</GroupName>
+          <Files>
+            <File>
+              <FileName>sfud.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SFUD\src\sfud.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_sfdp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SFUD\src\sfud_sfdp.c</FilePath>
+            </File>
+            <File>
+              <FileName>sfud_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\SFUD\port\sfud_port.c</FilePath>
             </File>
           </Files>
         </Group>

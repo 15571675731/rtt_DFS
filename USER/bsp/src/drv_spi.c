@@ -185,7 +185,6 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     struct stm32_spi *spi_drv = NULL;
     struct stm32_spi_io *ns_io;
     rt_size_t already_send_len = 0;
-	uint8_t _send = NULL;
     
     const uint8_t *send_buf = NULL;
     uint8_t *recv_buf = NULL;

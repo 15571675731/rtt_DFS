@@ -9,11 +9,8 @@ void spi_test(void)
     uint8_t send_data[] = {0x90, 0, 0, 0};
     uint8_t recv_data[10] = {0};
     struct rt_spi_device * spi_dev;
-    GPIO_InitTypeDef  GPIO_InitStructure;
     struct rt_spi_configuration cfg;
 	
-	uint16_t id = 0;
-    
     cfg.data_width = 8;
     cfg.max_hz = 2;
     cfg.mode = RT_SPI_MODE_3 | RT_SPI_MASTER | RT_SPI_MSB ;
