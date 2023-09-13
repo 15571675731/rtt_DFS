@@ -218,7 +218,8 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     SPIx = spi_drv->stm32_spi_config->Instance;
     
     ns_io = device->parent.user_data;
-    GPIO_ResetBits(ns_io->GPIOx, ns_io->GPIO_Pin);
+    if(message->cs_take)
+        GPIO_ResetBits(ns_io->GPIOx, ns_io->GPIO_Pin);
     
     //循环读/写数据,读写的数据量由 message->length 来决定 根据RTT的官方例程来看， message->length 这个值应该不用更新，传输完成返回即可
     
@@ -256,7 +257,8 @@ rt_uint32_t stm32_xfer(struct rt_spi_device *device, struct rt_spi_message *mess
     
     
     //拉高片选
-    GPIO_SetBits(ns_io->GPIOx, ns_io->GPIO_Pin);
+    if(message->cs_release)
+        GPIO_SetBits(ns_io->GPIOx, ns_io->GPIO_Pin);
     
 #ifdef _DEBUG_
     rt_kprintf("spi stm32_xfer success\r\n");

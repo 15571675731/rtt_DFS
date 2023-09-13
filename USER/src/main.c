@@ -210,7 +210,7 @@ void spi_test(void)
 //            rt_kprintf("use rt_spi_send_then_recv() read w25q ID is:0x%x\n", recv_data[0]);
 //			rt_spi_recv(spi_dev, recv_data, 1);
 //            rt_kprintf("use rt_spi_send_then_recv() read w25q ID is:0x%x\n", recv_data[0]);
-			id = My_DEV_ID();
+//			id = My_DEV_ID();
         }
     }
 }
