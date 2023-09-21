@@ -4,6 +4,9 @@
 /* Automatically generated file; DO NOT EDIT. */
 /* RT-Thread Configuration */
 
+
+#define RT_USING_SFUD
+
 /* RT-Thread Kernel */
 
 #define RT_NAME_MAX                 8
@@ -69,7 +72,7 @@
 #define FINSH_USING_MSH
 #define FINSH_USING_MSH_DEFAULT
 #define FINSH_USING_MSH_ONLY
-#define FINSH_ARG_MAX 10
+#define FINSH_ARG_MAX 100		//最大参数数量
 
 //使用密码
 //#define FINSH_USING_AUTH

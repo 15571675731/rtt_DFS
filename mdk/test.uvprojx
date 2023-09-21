@@ -185,6 +185,7 @@
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
             <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -338,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc;..\SFUD\inc</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc;..\SFUD\inc;..\SFUD\port</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -351,7 +352,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>4</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -901,6 +902,16 @@
               <FileName>sfud_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\SFUD\port\sfud_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi_flash.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SFUD\port\spi_flash.h</FilePath>
+            </File>
+            <File>
+              <FileName>spi_flash_sfud.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SFUD\port\spi_flash_sfud.h</FilePath>
             </File>
           </Files>
         </Group>

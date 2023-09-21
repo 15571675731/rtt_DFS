@@ -2,6 +2,8 @@
 #include "rtthread.h"
 #include "stm32f4xx.h"
 #include "drv_spi.h"
+#include "spi_flash_sfud.h"
+
 
 void spi_test(void)
 {
@@ -20,16 +22,23 @@ void spi_test(void)
 
     spi_dev = (struct rt_spi_device *)rt_device_find("spi10");
     
-    if(spi_dev)
+//    if(spi_dev)
+//    {
+//        
+//        rt_spi_configure(spi_dev, &cfg);
+//        if(ret == RT_EOK)
+//        {
+//            rt_spi_send_then_recv(spi_dev, &send_data, 4, &recv_data, 2);
+//            rt_kprintf("use rt_spi_send_then_recv() read w25q ID is:0x%x 0x%x\n", recv_data[0], recv_data[1]);
+//        }
+//    }
+	
+	if (RT_NULL == rt_sfud_flash_probe("W25Q128", "spi10"))  //注册块设备，这一步可以将外部                                flash抽象为系统的块设备
     {
-        
-        rt_spi_configure(spi_dev, &cfg);
-        if(ret == RT_EOK)
-        {
-            rt_spi_send_then_recv(spi_dev, &send_data, 4, &recv_data, 2);
-            rt_kprintf("use rt_spi_send_then_recv() read w25q ID is:0x%x 0x%x\n", recv_data[0], recv_data[1]);
-        }
+        rt_kprintf("rt_sfud_flash_probe error\r\n");
     }
+//	else
+//		rt_kprintf("rt_sfud_flash_probe success\r\n");
 }
 
 
