@@ -84,8 +84,10 @@ DSTATUS disk_initialize (
 	g_fatfs_spi_dev = (struct rt_spi_device *)rt_device_find("spi10");
 	
 	rt_kprintf("rt_device_find success\r\n");
+//    rt_sfud_flash_find_by_dev_name("");
 	g_fatfs_spi_flash = rt_sfud_flash_find("spi10");
-	sfud_erase(g_fatfs_spi_flash, 0, 4096);
+//    sfud_read(g_fatfs_spi_flash, 0x3f000, 4096, NULL);
+//	sfud_erase(g_fatfs_spi_flash, 0, 4096);
 //	g_fatfs_spi_flash = sfud_get_device(0);
 	rt_kprintf("sfud_get_device success\r\n");
 	return 0;
@@ -107,7 +109,7 @@ DRESULT disk_read (
 	DRESULT res;
 	int result;
 	
-	result = sfud_read(g_fatfs_spi_flash, sector*4096, count, buff);
+	result = sfud_read(g_fatfs_spi_flash, sector*4096, count*4096, buff);
     if (result == SFUD_SUCCESS)
     {
         return RES_OK;

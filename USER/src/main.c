@@ -56,15 +56,23 @@ BYTE work[FF_MAX_SS]; //一定是一个全局变量
 
 FIL fd;
 
+char write_buf[15] = "hello world\r\n";
+char read_buf[15] = {0};
+
 void fatfs_test()
 {
+    int i = 0;
+    uint32_t write_size = 0;
+    uint32_t read_size = 0;
 	FRESULT res;
 	
+    res = f_mkfs("0:", 0, work, sizeof(work));
+    
 	res = f_mount(&fsobject, "0:", 1);
 	
-	if(res == FR_NO_FILESYSTEM)
+	if(res != FR_OK)
 	{
-		rt_kprintf("res == FR_NO_FILESYSTEM error\r\n");
+		rt_kprintf("res == FR_NO_FILESYSTEM error error code:%d\r\n", res);
 		res = f_mkfs("0:", 0, work, sizeof(work));
 		
 		res = f_mount(NULL, "0:", 1);
@@ -80,6 +88,25 @@ void fatfs_test()
 		rt_kprintf("open file error");
 	else
 		rt_kprintf("open file success\r\n");
+    
+    f_write(&fd, write_buf, 15, &write_size);
+    if(write_size == 0)
+        rt_kprintf("f_write error\r\n");
+    else
+        rt_kprintf("write :%d\r\n", write_size);
+    
+    f_lseek(&fd,0);
+    f_read(&fd, read_buf, 15, &read_size);
+    
+    if(read_size != 0)
+    {
+        rt_kprintf("read data:%s\r\n", read_buf);
+        rt_kprintf("readsize:%d\r\n", read_size);
+        for(i=0; i<15; i++)
+            rt_kprintf("0x%x ", read_buf[i]);
+    }
+    else
+        rt_kprintf("read error\r\n");
 }
 
 
