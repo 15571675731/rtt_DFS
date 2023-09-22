@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc;..\SFUD\inc;..\SFUD\port</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\FWLIB\inc;..\USER\inc;..\rt-thread\include;..\rt-thread\bsp\board;..\rt-thread\components\finsh;..\rt-thread\bsp;..\rt-thread\include\libc;..\rt-thread\components\drivers\include;..\rt-thread\components\drivers\include\drivers;..\rt-thread\components\drivers\include\ipc;..\USER\bsp\inc;..\SFUD\inc;..\SFUD\port;..\FF15;..\SFUD\port</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -913,6 +913,41 @@
               <FileType>5</FileType>
               <FilePath>..\SFUD\port\spi_flash_sfud.h</FilePath>
             </File>
+            <File>
+              <FileName>sfud_cfg.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\SFUD\inc\sfud_cfg.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>FF15</GroupName>
+          <Files>
+            <File>
+              <FileName>diskio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FF15\diskio.c</FilePath>
+            </File>
+            <File>
+              <FileName>ff.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FF15\ff.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffsystem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FF15\ffsystem.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffunicode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\FF15\ffunicode.c</FilePath>
+            </File>
+            <File>
+              <FileName>ffconf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\FF15\ffconf.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -924,5 +959,14 @@
     <components/>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>test</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

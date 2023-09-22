@@ -4,6 +4,13 @@
 #include "shell.h"
 #include "spi_test.h"
 
+
+#include "ff.h"
+#include "diskio.h"
+
+#include "sfud.h"
+#include "spi_flash_sfud.h"
+
 #define LED_TASK_STACK_SIZE     256 //每次至少164（160刚好到线程栈使用80%的上线）
 
 //LED IO初始化
@@ -44,15 +51,76 @@ void led_thread(void *arg)
     }
 }
 
+FATFS fsobject;   //一定是一个全局变量
+BYTE work[FF_MAX_SS]; //一定是一个全局变量
+
+FIL fd;
+
+void fatfs_test()
+{
+	FRESULT res;
+	
+	res = f_mount(&fsobject, "0:", 1);
+	
+	if(res == FR_NO_FILESYSTEM)
+	{
+		rt_kprintf("res == FR_NO_FILESYSTEM error\r\n");
+		res = f_mkfs("0:", 0, work, sizeof(work));
+		
+		res = f_mount(NULL, "0:", 1);
+		
+		res = f_mount(&fsobject, "0:", 1);
+	}
+	else
+		rt_kprintf("res == FR_NO_FILESYSTEM success\r\n");
+	
+	
+	res = f_open(&fd , "0:abcd" , FA_OPEN_ALWAYS|FA_READ |FA_WRITE );
+	if(res != FR_OK)
+		rt_kprintf("open file error");
+	else
+		rt_kprintf("open file success\r\n");
+}
+
+
+void sfud_test()
+{
+	sfud_err err;
+	const sfud_flash *flash = NULL;
+	flash = sfud_get_device_table();
+	if(flash == NULL)
+		rt_kprintf("flash error\r\n");
+	else
+		rt_kprintf("flash success\r\n");
+	sfud_erase(flash, 0, 1024);
+}
+
+
+
 
 
 int main(void)
 {
+	int i = 0;
+	BYTE buf[100] = {0};
 //    rt_thread_t th1;
     LED_Init();
     
     spi_test();
-    
+	
+//	sfud__();
+	fatfs_test();
+//	sfud_test();
+//	disk_read(0, buf, 0, 100);
+
+//    for(i=0; i<100; i++)
+//		if(buf[i] != 0 && buf[i] != 0xff)
+//			rt_kprintf("0x%x ", buf[i]);
+//		rt_kprintf("\r\n");
+//	
+	
+	
+	rt_kprintf("test success\r\n");
     while(1)
     {
         rt_thread_delay(1000);

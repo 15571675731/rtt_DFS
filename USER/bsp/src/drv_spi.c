@@ -5,7 +5,7 @@
 
 /*--------------------------------------------------------------------------------*/
 /* 向操作系统中注册SPI总线设备 */
-#define _DEBUG_
+//#define _DEBUG_
 
 #define SPI_TIMEOUT     0XFF
 #define DUMMY           0X00
